@@ -1,103 +1,106 @@
-// --- CONFIGURATION ---
-// These are the words that will appear stacked vertically after the countdown.
-const WORDS_TO_REVEAL = ["HAPPY", "BIRTHDAY", "TO", "YOU"];
-const COUNTDOWN_DELAY_MS = 1500; // Time (in milliseconds) between 3, 2, and 1
-const TRANSITION_DELAY_MS = 2000; // Time to show the final words before moving to the gift section
+/* ==================================== */
+/* 1. GLOBAL STYLES & MATRIX BACKGROUND */
+/* ==================================== */
+body {
+    background-color: #000; 
+    font-family: 'Courier New', Courier, monospace;
+    color: #fff; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden; 
+    position: relative;
+}
 
-// --- DOM ELEMENTS (Must match IDs in index.html) ---
-const startButton = document.getElementById('start-button');
-const countdownNumberEl = document.getElementById('countdown-number');
-const revealTextEl = document.getElementById('reveal-text');
-const countdownSection = document.getElementById('countdown-section');
-const giftSection = document.getElementById('gift-section');
-const messageCard = document.getElementById('message-card');
-const music = document.getElementById('background-music');
+#app-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Center content vertically */
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10; 
+}
 
-let countdownValue = 3; // Starting number for the countdown
+.hidden {
+    display: none !important;
+}
 
-// --- HELPER: MATRIX BACKGROUND GENERATION ---
-// This creates the random, falling green characters.
-function generateMatrixBackground() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*()';
-    const columns = Math.floor(window.innerWidth / 20);
-    const container = document.body;
+/* ==================================== */
+/* 2. COUNTDOWN & REVEAL TEXT STYLING */
+/* ==================================== */
 
-    for (let i = 0; i < columns; i++) {
-        const column = document.createElement('div');
-        column.className = 'matrix-column';
-        column.style.left = `${i * 20}px`;
-        
-        // Create a long string of random characters for the column
-        column.textContent = Array(Math.ceil(window.innerHeight / 20) + 1)
-            .fill()
-            .map(() => chars[Math.floor(Math.random() * chars.length)])
-            .join('\n'); // \n is crucial for vertical display
-        
-        // Add a random delay to make the rain look random
-        column.style.animationDelay = `-${Math.random() * 5}s`; 
-        container.appendChild(column);
-    }
+/* Style for the countdown numbers (3, 2, 1) - PINK from the video */
+#countdown-number {
+    font-size: 8vw; 
+    color: #ff33cc; 
+    text-shadow: 0 0 15px #ff33cc, 0 0 30px #ff33cc;
+    transition: opacity 0.5s;
+    animation: pulse 1s infinite alternate;
+    z-index: 20;
+}
+
+/* Keyframes for the pulsing countdown number */
+@keyframes pulse {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Style for the START button */
+#start-button {
+    padding: 10px 20px;
+    font-size: 1.5em;
+    background-color: #ff33cc;
+    color: white;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+/* Style for the revealed words (HAPPY BIRTHDAY TO YOU) */
+#reveal-text {
+    font-size: 1.8em;
+    color: #ff33cc; 
+    text-shadow: 0 0 10px #ff33cc;
+    display: flex; 
+    flex-direction: column; /* Stacks words vertically */
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+#reveal-text span {
+    display: block; 
+    margin: 8px 0;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 
-// --- STEP 1: START SEQUENCE (Main function, called by 'START' button click) ---
-// This function initializes the entire animated sequence.
-window.startSequence = function() {
-    // 1. Hide the start button and clear initial text
-    if (startButton) startButton.classList.add('hidden');
-    countdownNumberEl.innerHTML = ''; 
-    
-    // 2. Start Matrix and Music
-    generateMatrixBackground();
-    music.play().catch(e => console.log("Music auto-play blocked:", e));
+/* ==================================== */
+/* 3. THE GREEN MATRIX RAIN EFFECT */
+/* ==================================== */
 
-    // 3. Set the first countdown number
-    countdownNumberEl.innerHTML = countdownValue;
-    
-    const interval = setInterval(() => {
-        countdownValue -= 1;
-        
-        if (countdownValue >= 1) {
-            countdownNumberEl.innerHTML = countdownValue;
-        } else if (countdownValue === 0) {
-            countdownNumberEl.innerHTML = 'GO!'; 
-            clearInterval(interval);
-            setTimeout(revealGreeting, 500); // Wait 0.5s before revealing words
-        }
-    }, COUNTDOWN_DELAY_MS);
+.matrix-column {
+    position: absolute;
+    top: 0;
+    font-size: 1.2em;
+    opacity: 0.2; 
+    animation: matrix-rain 7s linear infinite;
+    white-space: pre; 
+    color: #00FF00; 
+    user-select: none;
 }
 
-
-// --- STEP 2: REVEAL GREETING TEXT ---
-function revealGreeting() {
-    countdownNumberEl.classList.add('hidden');
-    
-    let wordIndex = 0;
-    revealTextEl.innerHTML = '';
-    
-    const revealInterval = setInterval(() => {
-        if (wordIndex < WORDS_TO_REVEAL.length) {
-            // Append the next word as a separate, vertical element
-            revealTextEl.innerHTML += `<span>${WORDS_TO_REVEAL[wordIndex]}</span>`;
-            wordIndex++;
-        } else {
-            clearInterval(revealInterval);
-            // Transition to the animated gift section
-            setTimeout(() => {
-                countdownSection.classList.add('hidden');
-                giftSection.classList.remove('hidden');
-            }, TRANSITION_DELAY_MS); 
-        }
-    }, 800); // Delay between each word appearing
+@keyframes matrix-rain {
+    0% { transform: translateY(-100vh); }
+    100% { transform: translateY(100vh); }
 }
 
-
-// --- STEP 3: OPEN GIFT BUTTON ACTION (called by gift button click) ---
-window.openGift = function() {
-    document.getElementById('open-gift-button').classList.add('hidden');
-    // Reveal the hidden card with your message image
-    messageCard.classList.remove('hidden'); 
+#background-music {
+    display: none;
 }
-
-// --- INITIALIZE: Display the Matrix rain helper and the button immediately on load ---
-document.addEventListener('DOMContentLoaded', generateMatrixBackground);
