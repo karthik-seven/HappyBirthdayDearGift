@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Matrix Surprise</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <audio id="background-music" src="music.mp3" loop autoplay></audio> 
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <div id="countdown-section" class="screen">
+            <h1 id="countdown-number">SCAN TO START</h1> 
+            <div id="reveal-text"></div>
+        </div>
+
+        <div id="gift-section" class="screen hidden">
+            <img id="cat-animation" src="cats-on-cake.gif" alt="Animated birthday scene" style="max-width: 90%; margin-bottom: 20px;">
+            
+            <button id="open-gift-button" onclick="openGift()">Tap to Open Your Gift!</button>
+
+            <div id="message-card" class="hidden">
+                <img src="handwritten-message.png" alt="Handwritten Message" style="max-width: 90%; border: 1px solid #ccc;">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
