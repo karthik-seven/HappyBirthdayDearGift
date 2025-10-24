@@ -3,6 +3,7 @@ const WORDS_TO_REVEAL = ["HAPPY", "BIRTHDAY", "TO", "YOU"];
 const COUNTDOWN_DELAY_MS = 1500; // 1.5 seconds delay between countdown numbers
 
 // --- DOM ELEMENTS ---
+const startButton = document.getElementById('start-button');
 const countdownNumberEl = document.getElementById('countdown-number');
 const revealTextEl = document.getElementById('reveal-text');
 const countdownSection = document.getElementById('countdown-section');
@@ -10,7 +11,7 @@ const giftSection = document.getElementById('gift-section');
 const messageCard = document.getElementById('message-card');
 const music = document.getElementById('background-music');
 
-let countdownValue = 3; // Starting number for the countdown
+let countdownValue = 3; 
 
 // --- HELPER: MATRIX BACKGROUND GENERATION ---
 function generateMatrixBackground() {
@@ -23,24 +24,25 @@ function generateMatrixBackground() {
         column.className = 'matrix-column';
         column.style.left = `${i * 20}px`;
         
-        // Create a long string of random characters for the column
         column.textContent = Array(Math.ceil(window.innerHeight / 20) + 1).fill().map(() => chars[Math.floor(Math.random() * chars.length)]).join('\n');
         
-        // Add a random delay so columns start falling at different times
         column.style.animationDelay = `-${Math.random() * 5}s`; 
         container.appendChild(column);
     }
 }
 
 
-// --- STEP 1: START SEQUENCE (Main entry point after page load) ---
+// --- STEP 1: START SEQUENCE (Main function, called by 'START' button) ---
 function startSequence() {
-    generateMatrixBackground();
+    // 1. Hide the start button
+    startButton.classList.add('hidden'); 
     
-    // Attempt to play music (must be user-initiated on some browsers)
+    // 2. Start Matrix and Music
+    generateMatrixBackground();
     music.play().catch(e => console.log("Music auto-play blocked:", e));
 
-    countdownNumberEl.innerHTML = countdownValue;
+    // 3. Begin Countdown
+    countdownNumberEl.innerHTML = countdownValue; // Show the '3'
     
     const interval = setInterval(() => {
         countdownValue -= 1;
@@ -50,7 +52,7 @@ function startSequence() {
         } else if (countdownValue === 0) {
             countdownNumberEl.innerHTML = 'GO!'; 
             clearInterval(interval);
-            setTimeout(revealGreeting, 500); // Wait 0.5s before revealing text
+            setTimeout(revealGreeting, 500); // Wait 0.5s before revealing words
         }
     }, COUNTDOWN_DELAY_MS);
 }
@@ -65,12 +67,12 @@ function revealGreeting() {
     
     const revealInterval = setInterval(() => {
         if (wordIndex < WORDS_TO_REVEAL.length) {
-            // Append the next word with an animation style
-            revealTextEl.innerHTML += `<span style="opacity:0; animation: fadeInWord 0.5s forwards ${wordIndex * 0.5}s;">${WORDS_TO_REVEAL[wordIndex]}</span>`;
+            // Append the next word as a styled element
+            revealTextEl.innerHTML += `<span>${WORDS_TO_REVEAL[wordIndex]}</span>`;
             wordIndex++;
         } else {
             clearInterval(revealInterval);
-            // Move to the next section (the animated cats/gift)
+            // Transition to the animated gift section
             setTimeout(() => {
                 countdownSection.classList.add('hidden');
                 giftSection.classList.remove('hidden');
@@ -79,12 +81,11 @@ function revealGreeting() {
     }, 800); 
 }
 
-// --- STEP 3: OPEN GIFT BUTTON ACTION (triggered by button click) ---
+// --- STEP 3: OPEN GIFT BUTTON ACTION ---
 function openGift() {
     document.getElementById('open-gift-button').classList.add('hidden');
     // Reveal the hidden card with your handwritten message image
     messageCard.classList.remove('hidden'); 
 }
 
-// --- INITIALIZE ---
-document.addEventListener('DOMContentLoaded', startSequence);
+// --- INITIALIZE: Nothing happens until the 'START' button is clicked! ---
