@@ -6,14 +6,18 @@
     <title>Birthday Matrix Surprise</title>
     <link rel="stylesheet" href="style.css">
     
-    <audio id="background-music" src="music.mp3" loop autoplay></audio> 
+    <audio id="background-music" src="music.mp3" loop></audio> 
 </head>
 <body>
 
     <div id="app-container">
         
         <div id="countdown-section" class="screen">
-            <h1 id="countdown-number">SCAN TO START</h1> 
+            
+            <h1 id="countdown-number">TAP TO START SURPRISE</h1> 
+            
+            <button id="start-button" onclick="startSequence()">START</button> 
+            
             <div id="reveal-text"></div>
         </div>
 
